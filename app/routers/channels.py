@@ -28,3 +28,8 @@ async def get_channel_by_id(channel_id: int, db: Session = Depends(get_db)):
 @router.post("")
 async def create_channel(channel: schemas.Channel, db: Session = Depends(get_db)):
     return crud.create_channel(db=db, channel=channel)
+
+
+@router.delete("")
+async def delete_all_channels(db: Session = Depends(get_db)):
+    return crud.delete_channels(db=db)

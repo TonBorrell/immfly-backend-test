@@ -11,6 +11,15 @@ def get_all_channels(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Channel).offset(skip).limit(limit).all()
 
 
+def delete_channels(db: Session):
+    channels = get_all_channels(db)
+    for channel in channels:
+        db.delete(channel)
+        db.commit()
+
+    return "Done"
+
+
 def get_subchannel(db: Session, channel_id: int):
     if get_channel_by_id(db, channel_id).hasSubChannel:
         return get_channel_by_id(db, channel_id).subChannel
@@ -60,6 +69,16 @@ def relate_one_channel_with_subchannel(
     return channel
 
 
+def relate_one_channel_with_content(db: Session, channel_id: int, content_id: int):
+    channel = get_channel_by_id(db, channel_id)
+    if not channel.hasSubContent:
+        channel.hasSubContent = True
+    channel.subcontent = content_id
+    db.commit()
+
+    return channel
+
+
 def get_all_contents(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Content).offset(skip).limit(limit).all()
 
@@ -72,3 +91,12 @@ def create_content(db: Session, content: schemas.Content):
     db.commit()
     db.refresh(db_content)
     return db_content
+
+
+def delete_contents(db: Session):
+    contents = get_all_contents(db)
+    for content in contents:
+        db.delete(content)
+        db.commit()
+
+    return "Done"
