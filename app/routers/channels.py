@@ -16,6 +16,15 @@ async def get_all_channels(db: Session = Depends(get_db)):
     return crud.get_all_channels(db=db)
 
 
+@router.get("/{channel_id}/")
+async def get_channel_by_id(channel_id: int, db: Session = Depends(get_db)):
+    channel = crud.get_channel_by_id(db=db, channel_id=channel_id)
+    if channel is not None:
+        return channel
+    else:
+        raise HTTPException(status_code=404, detail="Channel not found")
+
+
 @router.post("")
 async def create_channel(channel: schemas.Channel, db: Session = Depends(get_db)):
     return crud.create_channel(db=db, channel=channel)

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 
 
-def get_channel(db: Session, channel_id: int):
+def get_channel_by_id(db: Session, channel_id: int):
     return db.query(models.Channel).filter(models.Channel.id == channel_id).first()
 
 
@@ -12,8 +12,24 @@ def get_all_channels(db: Session, skip: int = 0, limit: int = 100):
 
 
 def get_subchannel(db: Session, channel_id: int):
-    if get_channel(db, channel_id).hasSubChannel:
-        return get_channel(db, channel_id).subChannel
+    if get_channel_by_id(db, channel_id).hasSubChannel:
+        return get_channel_by_id(db, channel_id).subChannel
+
+
+def get_all_subchannels(db: Session, skip: int = 0, limit: int = 100):
+    result = db.query(models.Channel).offset(skip).limit(limit).all()
+    all_subchannels = []
+    for channel in result:
+        if channel.hasSubChannel:
+            all_subchannels.append(channel)
+
+    return all_subchannels
+
+
+def get_subchannels_by_id(db: Session, channel_id: int):
+    channel = get_channel_by_id(db, channel_id)
+    if channel.hasSubChannel:
+        return get_channel_by_id(db, channel.subchannel)
 
 
 def create_channel(db: Session, channel: schemas.Channel):
@@ -30,6 +46,18 @@ def create_channel(db: Session, channel: schemas.Channel):
     db.commit()
     db.refresh(db_channel)
     return db_channel
+
+
+def relate_one_channel_with_subchannel(
+    db: Session, channel_id: int, subchannel_id: int
+):
+    channel = get_channel_by_id(db, channel_id)
+    if not channel.hasSubChannel:
+        channel.hasSubChannel = True
+    channel.subchannel = subchannel_id
+    db.commit()
+
+    return channel
 
 
 def get_all_contents(db: Session, skip: int = 0, limit: int = 100):

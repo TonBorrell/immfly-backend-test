@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import channels, content
+from .routers import channels, content, subchannels
 from db import crud, models, schemas
 from db.database import SessionLocal, engine
 
@@ -21,3 +21,4 @@ app.add_middleware(
 
 app.include_router(channels.router)
 app.include_router(content.router)
+app.include_router(subchannels.router)

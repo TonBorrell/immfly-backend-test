@@ -6,7 +6,7 @@ from db.functions import get_db
 
 router = APIRouter(
     prefix="/api/v1/content",
-    tags=["channels"],
+    tags=["content"],
     responses={404: {"description": "Not found"}},
 )
 
